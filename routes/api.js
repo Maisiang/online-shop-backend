@@ -27,7 +27,7 @@ router.use(auth = function(request,response,next){
       return next();
     }
     // 其餘頁面要做身分驗證 - 前端頁面還沒加判斷
-    console.log('身分驗證',request.session);
+    console.log('身分驗證',request.session.user);
     if(request.session.user===undefined){
       console.log('請求失敗：',request.method,request.path);
       response.send({

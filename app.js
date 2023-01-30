@@ -17,7 +17,11 @@ app.use(upload.array());
 
 // 設置允許跨域請求
 var cors = require('cors');
-app.use(cors());
+app.use(cors({
+    origin: 'http://itdove.ddns.net:8080',
+    credentials: true
+}));
+
 
 // 配置session
 const session = require('express-session')
