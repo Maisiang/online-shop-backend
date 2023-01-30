@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "install-build": "npm install && npm run build",
     "start": "node ./bin/www"
   },
   "dependencies": {

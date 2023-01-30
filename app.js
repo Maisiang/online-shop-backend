@@ -13,12 +13,13 @@ const multer = require('multer');
 const upload = multer();
 app.use(upload.array());
 
-
+// 載入環境變數
+require('dotenv').config();
 
 // 設置允許跨域請求
 var cors = require('cors');
 app.use(cors({
-    origin: 'http://itdove.ddns.net:8080',
+    origin: process.env.ORIGIN,
     credentials: true
 }));
 
