@@ -5,31 +5,46 @@ var app = express();
 // 引入相關模組
 var createError = require('http-errors');
 var path = require('path');
-var cookieParser = require('cookie-parser');
+//var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-// 配置multer - 解析 multipart/form-data
-const multer = require('multer');
-const upload = multer();
-app.use(upload.array());
+// 引入相關模組
+const multer  = require('multer');
+const cors    = require('cors');
+const session = require('express-session')
+const Redis   = require('ioredis');
 
 // 載入環境變數
 require('dotenv').config();
 
+// 配置multer - 解析 multipart/form-data
+const upload = multer();
+app.use(upload.array());
+
 // 設置允許跨域請求
-var cors = require('cors');
 app.use(cors({
     origin: process.env.ORIGIN,
     credentials: true
 }));
 
+// 連線到資料庫
+const mongodb = require('./db/mongodb');
+mongodb.connect();
+
+// 連線到Redis
+const redisStore = require("connect-redis")(session);
+const redis = new Redis({
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    password: process.env.REDIS_PASS
+});
 
 // 配置session
-const session = require('express-session')
 const sessionParser = session({
-  secret: 'DoveSecret',
+  secret: 'DoveSecret', // 建議 128 bytes 亂數字串
   resave: false,
   saveUninitialized: true,
+  store:new redisStore({client: redis})
   // cookie: {sameSite: 'strict',}
 })
 app.use(sessionParser);
@@ -38,18 +53,14 @@ app.use(sessionParser);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+//app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 所有路由
-var indexRouter = require('./routes/api');
-var usersRouter = require('./routes/file');
+const indexRouter = require('./routes/api');
+const usersRouter = require('./routes/file');
 app.use('/api', indexRouter);
 app.use('/file', usersRouter);
-
-// 連線到資料庫
-const mongodb = require('./db/mongodb');
-mongodb.connect();
 
 
 // 捕獲 404 並轉送到 Error Handler
@@ -64,7 +75,6 @@ app.use(function(err, req, res, next) {
   console.log(req.app.get('env') === 'development' ? err : {})
   res.send(err.message);
 });
-
 
 module.exports = {
   app,
