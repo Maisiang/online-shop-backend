@@ -10,9 +10,9 @@ exports.getChat = async()=>{
 // 新增聊天室內容
 exports.addChat = (sendData)=>{
     let tmp = Object.assign({},sendData);
-    if(tmp.avatar ==='unknown.jpg')
+    if(tmp.avatar === process.env.UNKNOWN_IMG)
         tmp.username= tmp.username + ' ';
-    // 插入訂單資訊到資料庫
+    // 插入聊天訊息到資料庫
     let insertChat = new chat(tmp);
     insertChat.save((error,results)=>{
         if(error) console.log(error);

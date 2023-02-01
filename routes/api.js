@@ -6,13 +6,27 @@ const user = require('../controller/user');
 const cart = require('../controller/cart');
 const product = require('../controller/product');
 const transaction = require('../controller/transaction');
+const avatar = require('../controller/avatar');
 
-// 配置檔案上傳套件
+// 配置multer - 解析 multipart/form-data
 const multer = require('multer');
-// 設定目標，檔案存放地方
-const uploadConfig = multer({
-  dest: './upload',
-  limits: { fileSize: 2 * 1024 * 1024 }
+// 解析form表單資料
+const parseForm = multer();
+
+// 不指定dest，預設以buffer寫入記憶體
+var upload = multer({
+  limits: {
+    fileSize: 2 * 1024 * 1024,
+  },
+  fileFilter: (req, file, cb) => {
+      if (file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
+        cb(null, true);
+      }
+      else{
+        cb(null, false);
+        return cb(new Error('Allowed only .jpg and .jpeg'));
+      }
+  }
 })
 
 
@@ -53,11 +67,10 @@ router.post('/cart/:product_id'   , cart.addCart);    // 新增購物車商品
 router.delete('/cart/:product_id' , cart.deleteCart); // 移除購物車商品
 
 // 用戶
-router.get('/user'          , user.getUserInfo);    // 取得用戶資訊
-router.post('/user/register', user.register);       // 新增用戶
-router.put('/user/password' , user.updatePassword); // 更新密碼 
-router.put('/user/avatar'   , uploadConfig.single("avatar"), user.updateAvatar);  // 更新頭像
-
+router.get('/user'          , user.getUserInfo);                        // 取得用戶資訊
+router.post('/user/register', parseForm.array(), user.register);        // 新增用戶
+router.put('/user/password' , user.updatePassword);                     // 更新密碼 
+router.put('/user/avatar'   , upload.single("avatar"), avatar.updateAvatar)// 更新頭像
 
 // 用戶 - Session
 router.post('/user/login'    , user.login);  // 建立Session

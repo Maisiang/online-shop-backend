@@ -1,26 +1,20 @@
 const user = require('../models/user');
 const cart = require('../models/cart');
+const avatar = require('../models/avatar');
 
-const fs = require('fs');
 
 // 取得用戶資料
 exports.getUserInfo = async(request,response)=>{
     // 搜尋用戶名是否存在
     let query = await user.find({ username: request.session.user.username });
     console.log('取得用戶資訊：\n',query);
-    // 頭像路徑
-    let filePath = './upload/' + request.session.user.username + '.jpg';
-    // 傳送檔案給用戶
-    fs.readFile(filePath, (error, file) => {
-        if (error) throw error;
-        // 發送到客戶端
-        response.send({
-            isLogin : true,
-            username: query[0].username,
-            email   : query[0].email,
-            avatar  : 'data:image/jpeg;base64,' + file.toString('base64'),
-            registrationDate: query[0].registrationDate
-        });
+    // 傳送給用戶
+    response.send({
+        isLogin : true,
+        username: query[0].username,
+        email   : query[0].email,
+        avatar  : request.session.user.avatar,
+        registrationDate: query[0].registrationDate
     });
 }
 
@@ -49,7 +43,6 @@ exports.register = async(request,response)=>{
             username: request.body.username,
             password: request.body.password,
             email   : request.body.email,
-            avatar  : 'pigeon1.jpg',
             registrationDate: date
         })
         await addUser.save((error,results)=>{
@@ -97,22 +90,6 @@ exports.updatePassword = async(request,response)=>{
     }
 }
 
-// 用戶更新頭像
-exports.updateAvatar = async(request,response)=>{
-    console.log(request.session.user.username,' 用戶更新頭像' , request.file);
-    // 更改檔案名稱
-    let filePath = './upload/' + request.session.user.username + '.jpg';
-    fs.renameSync(request.file.path, filePath)
-    // 更新資料庫的avatar
-    await user.updateOne(
-        { username: request.session.user.username },
-        { $set: { avatar: request.session.user.username+'.jpg' } }
-    );
-    response.send({
-        message:'頭像更新成功'
-    })
-}
-
 
 /* Session */
 
@@ -136,8 +113,17 @@ exports.login = async(request,response)=>{
     // 用戶存在
     else{
         console.log('登入成功！')
+        let queryAvatar = await avatar.find({ name: request.body.username });
+        let avatarTmp = process.env.PIGEON_IMG;
+        if(queryAvatar.length!=0){
+            avatarTmp = queryAvatar[0].link;
+        }
         // Session 儲存用戶資訊
-        request.session.user = query[0];
+        request.session.user = {
+            username: query[0].username,
+            avatar: avatarTmp
+        };
+
         // 傳送資訊到客戶端 (不包含密碼)
         response.send({
             isLogin:true,
@@ -161,9 +147,7 @@ exports.isLogin = async(request,response)=>{
     response.send({
         isLogin:true,
         userInfo: {
-            username:request.session.user.username,
-            email:request.session.user.email,
-            avatar: request.session.user.avatar
+            username:request.session.user.username
         },
         
     });

@@ -5,21 +5,16 @@ var app = express();
 // 引入相關模組
 var createError = require('http-errors');
 var path = require('path');
-//var cookieParser = require('cookie-parser');
+var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 // 引入相關模組
-const multer  = require('multer');
 const cors    = require('cors');
 const session = require('express-session')
 const Redis   = require('ioredis');
 
 // 載入環境變數
 require('dotenv').config();
-
-// 配置multer - 解析 multipart/form-data
-const upload = multer();
-app.use(upload.array());
 
 // 設置允許跨域請求
 app.use(cors({
@@ -44,7 +39,7 @@ const sessionParser = session({
   secret: 'DoveSecret', // 建議 128 bytes 亂數字串
   resave: false,
   saveUninitialized: true,
-  store:new redisStore({client: redis})
+  //store:new redisStore({client: redis})
   // cookie: {sameSite: 'strict',}
 })
 app.use(sessionParser);
@@ -53,7 +48,7 @@ app.use(sessionParser);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-//app.use(cookieParser());
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 所有路由

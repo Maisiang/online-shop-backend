@@ -1,12 +1,6 @@
 const mongoose = require('mongoose');
 
-/*
-const mongoDB = 'mongodb+srv://' + process.env.DB_USER + ':' + process.env.DB_PASS + 
-				'@itdove.qqcyunq.mongodb.net/' + process.env.DB_NAME +
-				'?retryWrites=true&w=majority';
-*/
-const mongoDB = 'mongodb://127.0.0.1:27017/dove';
-
+const mongoDB = process.env.MONGODB_LOCAL;
 
 mongoose.set('strictQuery', true);
 

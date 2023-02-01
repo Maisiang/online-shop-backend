@@ -88,12 +88,14 @@ function clientClose(ws){
 async function newConnect(ws,session){
   // 判斷用戶身分
   ws.username = '訪客'+ num++;
-  ws.avatar = 'unknown.jpg';
+  ws.avatar = process.env.UNKNOWN_IMG;
   if(session.user!=undefined){
     ws.username = session.user.username;
     ws.avatar = session.user.avatar;
     num--;
+    console.log('testtest',session.user)
   }
+
   // 新增到線上用戶列表
   if(userList.indexOf(ws.username)===-1)
     userList.push(ws.username);
