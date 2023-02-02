@@ -1,4 +1,4 @@
-const { mongoose } = require('../db/mongodb.js');
+const { mongoose } = require('../lib/mongodb.js');
 
 const productSchema = new mongoose.Schema(
     {

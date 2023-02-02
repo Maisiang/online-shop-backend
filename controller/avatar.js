@@ -39,7 +39,6 @@ exports.updateAvatar = async(request,response)=>{
      request.session.user.avatar=resFromImgur.data.link;
      // 傳送訊息給用戶
      response.send({
-        isLogin: true,
         message: "更新頭像成功"
     });
 }

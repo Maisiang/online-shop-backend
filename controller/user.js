@@ -10,7 +10,6 @@ exports.getUserInfo = async(request,response)=>{
     console.log('取得用戶資訊：\n',query);
     // 傳送給用戶
     response.send({
-        isLogin : true,
         username: query[0].username,
         email   : query[0].email,
         avatar  : request.session.user.avatar,
@@ -78,13 +77,11 @@ exports.updatePassword = async(request,response)=>{
             { $set: { password: request.body.passwordList.newPwd } }
         );
         response.send({
-            isLogin: true,
             message:'密碼變更成功！'
         });
     }
     else{
         response.send({
-            isLogin: true,
             message:'輸入的密碼有誤，請重新輸入...'
         });
     }
@@ -149,6 +146,5 @@ exports.isLogin = async(request,response)=>{
         userInfo: {
             username:request.session.user.username
         },
-        
     });
 }

@@ -6,10 +6,10 @@
  * Module dependencies.
  */
 
-var {app,sessionParser} = require('../app');
-var debug = require('debug')('server:server');
-var http = require('http');
-const wss = require('../wss');
+const { app, sessionParser } = require('../lib/app');
+const debug = require('debug')('server:server');
+const http = require('http');
+const wss = require('../lib/wss');
 
 /**
  * Get port from environment and store in Express.
@@ -86,12 +86,12 @@ function onListening() {
  * Error handler
  */
 process.on('uncaughtException', function(err) {
-  console.log('同步：',err);
+  console.log('同步： ',err);
   process.exit(1);
 })
  
 process.on('unhandledRejection', function(err) {
-  console.log('非同步',err);
+  console.log('非同步： ',err);
   process.exit(1)
 })
 
