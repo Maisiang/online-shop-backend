@@ -1,6 +1,7 @@
 const transaction = require('../models/transaction');
 const product = require('../models/product');
 const cart = require('../models/cart');
+const utils = require('./utils');
 
 const { ObjectId } = require('mongodb');
 
@@ -12,10 +13,21 @@ exports.getTransaction = async(request,response)=>{
     response.json(query);
 }
 
-// 新增交易紀錄 -   需驗證表單欄位
+// 新增交易紀錄
 exports.addTransaction = async(request,response)=>{
-    let message = '已送出訂單！';
     console.log('用戶送出訂單：',request.body)
+    // 驗證訂單資訊是否符合格式
+    if(!utils.validateEmail(request.body.orderInfo.email)   ||
+       !utils.validateTel(request.body.orderInfo.phoneNum)  ||
+       request.body.orderInfo.name.length>10    ||
+       request.body.orderInfo.address.length>50 ||
+       request.body.orderInfo.note.length>50){
+        response.send({
+            isSuccess: false,
+            message: '輸入的資料有誤...'
+        })
+        return;
+    }
     // 到資料庫用id尋找price計算總金額
     let query;
     let total = 0;
@@ -37,7 +49,11 @@ exports.addTransaction = async(request,response)=>{
     await insertTransaction.save((error,results)=>{
         if(error){
             console.log(error);
-            message = 'Server Error 訂單取消';
+            response.send({
+                isSuccess: false,
+                message: 'Server Error 訂單取消...'
+            });
+            return;
         }
     })
     // 移除用戶購物車所有商品id
@@ -46,9 +62,10 @@ exports.addTransaction = async(request,response)=>{
         {$set:{product_id:[]}}
     )
     // 結果傳送到客戶端
-    console.log('訂單結果： ',message);
+    console.log('已送出訂單！');
     response.send({
-        message: message
+        isSuccess: true,
+        message: '已送出訂單！'
     });
 
 }
