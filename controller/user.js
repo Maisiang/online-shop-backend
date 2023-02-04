@@ -136,6 +136,7 @@ exports.login = async(request,response)=>{
         password: query[0].password,
         avatar: avatarTemp
     };
+    console.log('儲存Session資訊: ',request.session.user);
 
     // 傳送資訊到客戶端 (不包含密碼)
     response.send({
