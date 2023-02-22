@@ -6,7 +6,6 @@ const user = require('../controller/user');
 const cart = require('../controller/cart');
 const product = require('../controller/product');
 const transaction = require('../controller/transaction');
-const avatar = require('../controller/avatar');
 
 // 配置multer - 解析 multipart/form-data
 const multer = require('multer');
@@ -55,7 +54,7 @@ router.delete('/cart/:product_id' , requireLogin , cart.deleteCart); // 移除�
 router.get('/user'          , requireLogin , user.getUserInfo);      // 取得用戶資訊
 router.post('/user/register', parseForm.array(), user.register);     // 新增用戶
 router.put('/user/password' , requireLogin , user.updatePassword);   // 更新密碼 
-router.put('/user/avatar'   , requireLogin , upload.single("avatar"), avatar.updateAvatar); // 更新頭像
+router.put('/user/avatar'   , requireLogin , upload.single("avatar"), user.updateAvatar); // 更新頭像
 
 // 用戶 - Session
 router.post('/user/login'       , user.login);                    // 用戶登入
