@@ -20,7 +20,7 @@ exports.getUserInfo = async(request,response)=>{
 
 // 用戶註冊
 exports.register = async(request,response)=>{
-    console.log('用戶註冊：',request.body)
+    console.log('用戶註冊：',request.body.username)
     // 驗證欄位是否符合規則
     if(!utils.validateUsername(request.body.username)||
        !utils.validatePassword(request.body.password)||
@@ -49,9 +49,10 @@ exports.register = async(request,response)=>{
     // 新增到資料庫
     const date = new Date().toISOString().slice(0,10);
     // 在user集合新增帳號
+
     let addUser = new user({
         username: request.body.username,
-        password: request.body.password,
+        password: utils.hashPassword(request.body.password),
         email   : request.body.email,
         registrationDate: date
     })
@@ -78,16 +79,18 @@ exports.register = async(request,response)=>{
 
 // 用戶更新密碼
 exports.updatePassword = async(request,response)=>{
-    console.log(request.session.user.username ,'用戶更新密碼\n',request.body.passwordList)
+    console.log(request.session.user.username ,'用戶更新密碼\n');
     // 當舊密碼正確、新密碼兩次輸入一致
-    if((request.session.user.password === request.body.passwordList.oldPwd)&&
+    let oldHashPwd = utils.hashPassword(request.body.passwordList.oldPwd);
+    if((request.session.user.password === oldHashPwd)&&
        (request.body.passwordList.newPwd === request.body.passwordList.reNewPwd)&&
         utils.validatePassword(request.body.passwordList.newPwd)){
+        let newHashPwd = utils.hashPassword(request.body.passwordList.newPwd);
         await user.updateOne(
             { username: request.session.user.username },
-            { $set: { password: request.body.passwordList.newPwd } }
+            { $set: { password: newHashPwd } }
         );
-        request.session.user.password = request.body.passwordList.newPwd;
+        request.session.user.password = newHashPwd;
         response.send({
             isSuccess: true,
             message:'密碼變更成功！'
@@ -106,11 +109,11 @@ exports.updatePassword = async(request,response)=>{
 
 // 用戶登入
 exports.login = async(request,response)=>{
-    console.log('用戶登入：',request.body);
+    console.log('用戶登入：',request.body.username);
     // 搜尋用戶名和密碼是否一樣(注意SQLi)
     let query = await user.find({
         username: request.body.username,
-        password: request.body.password
+        password: utils.hashPassword(request.body.password)
     });
     // 用戶不存在
     if(query.length === 0){
@@ -136,8 +139,6 @@ exports.login = async(request,response)=>{
         password: query[0].password,
         avatar: avatarTemp
     };
-    console.log('儲存Session資訊: ',request.session.user);
-
     // 傳送資訊到客戶端 (不包含密碼)
     response.send({
         isLogin:true,
@@ -149,7 +150,6 @@ exports.login = async(request,response)=>{
 
 // 用戶登出
 exports.logout = async(request,response)=>{
-    console.log('用戶登出');
     request.session.destroy();
     response.send({
         message:'登出成功！'
