@@ -39,7 +39,6 @@ const requireLogin = (request,response,next) => {
       response.status(401).send('Unauthorized');
   }
   else{
-    console.log('登入: true')
     next();
   }
 };
@@ -53,15 +52,15 @@ router.post('/cart/:product_id'   , requireLogin , cart.addCart);    // 新增�
 router.delete('/cart/:product_id' , requireLogin , cart.deleteCart); // 移除購物車商品
 
 // 用戶
-router.get('/user'          , requireLogin , user.getUserInfo);             // 取得用戶資訊
-router.post('/user/register', parseForm.array(), user.register);            // 新增用戶
-router.put('/user/password' , requireLogin , user.updatePassword);                         // 更新密碼 
-router.put('/user/avatar'   , requireLogin , upload.single("avatar"), avatar.updateAvatar);// 更新頭像
+router.get('/user'          , requireLogin , user.getUserInfo);      // 取得用戶資訊
+router.post('/user/register', parseForm.array(), user.register);     // 新增用戶
+router.put('/user/password' , requireLogin , user.updatePassword);   // 更新密碼 
+router.put('/user/avatar'   , requireLogin , upload.single("avatar"), avatar.updateAvatar); // 更新頭像
 
 // 用戶 - Session
-router.post('/user/login'       , user.login);  // 用戶登入
-router.post('/user/logout'      , user.logout); // 用戶登出
-router.get('/user/loginStatus'  , requireLogin  , user.isLogin); // 取得登入狀態
+router.post('/user/login'       , user.login);                    // 用戶登入
+router.post('/user/logout'      , user.logout);                   // 用戶登出
+router.get('/user/loginStatus'  , requireLogin  , user.isLogin);  // 取得登入狀態
 
 
 // 交易紀錄
@@ -72,7 +71,7 @@ router.post('/transaction' , requireLogin , transaction.addTransaction);  // 新
 
 /* GET index listing. */
 router.get('/', function(req, res, next) {
-  res.send('API router')
+  res.send('API Server 運作中')
 });
 
 
