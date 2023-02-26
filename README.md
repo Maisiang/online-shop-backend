@@ -7,27 +7,47 @@
 ## 專案簡介
 ### 雲端託管
 - [Render](https://render.com/)
+  部署API Server。
 - [MongoDB Atlas](https://www.mongodb.com/atlas/database)
+  MongoDB雲端資料庫服務，儲存用戶、購物車、訂單等資料。
 - [Redis Cloud](https://redis.com/redis-enterprise-cloud/overview/)
+  Redis 記憶體資料庫服務的雲端平台，用來儲存 session 資料。
 - [Imgur](https://imgur.com/)
+  免費的圖片儲存空間，用來管理用戶頭像。
 
 ### 主要技術
 - Node.js
-- express
+- [express](https://expressjs.com/zh-tw/)
+  Node.js的web應用程式開發框架，可以快速建立web應用程式，並且提供Router、Middleware。
 - http
+  建立和啟動一個HTTP伺服器，發送和結束HTTP請求，監聽HTTP伺服器事件。
 - [cors](https://www.npmjs.com/package/cors)
+  透過CORS機制允許網站跨域請求，並設定 Credentials 允許攜帶認證資訊(Cookie)。
 - [dotenv](https://www.npmjs.com/package/dotenv)
+  用於將環境變數從 .env 文件中載入到 process.env 對象中
 - [express-session](https://www.npmjs.com/package/express-session)
+  Express middleware，用來建立和管理用戶 Session。
+  - Session ID：辨識用戶，以 Cookie 方式儲存在客戶端。
+  - secret：加密 session ID 的 key，我使用 64bytes 的亂數字串。
+  - proxy：在Render部署應用會生成反向代理伺服器來處理請求，因此使用 session 時需要設定代理。
+  - store：設定將 session 儲存到 Redis 資料庫。
 - [multer](https://www.npmjs.com/package/multer)
-- [WebSocket](https://www.npmjs.com/package/ws)
-- [MongoDB](https://api.mongodb.com/)
-- [mongoose](https://mongoosejs.com/docs/api.html)
-- [connect-redis](https://www.npmjs.com/package/connect-redis)
+  Node.js middleware，處理 multipart/form-data 類型表單資料，對接前後端用戶頭像和註冊表單。
 - [Imgur](https://www.npmjs.com/package/imgur)
+  整合Imgurl API，上傳用戶頭像功能。
+- [mongoose](https://mongoosejs.com/docs/api.html)
+  Node.js MongoDB ODM套件，基於Schema的資料模型設計方式，簡化資料庫操作和管理，並
+  透過驗證模型，保證資料正確和一致性。
+- [crypto](https://nodejs.org/api/crypto.html)
+  提供各種加密、Hash方法，用來加密用戶密碼和重要資料。
+- [connect-redis](https://www.npmjs.com/package/connect-redis)
+- [WebSocket](https://www.npmjs.com/package/ws)
+
+
 
 ## 環境變數
 ### CORS
-- ORIGIN= 設定請求的網站來源
+- ORIGIN = 設定請求的網站來源
 ### MongoDB
 - MONGODB_URI
 ### Redis
@@ -38,6 +58,9 @@
 - CLIENT_ID
 - CLIENT_SECRET
 - REFRESH_TOKEN
+- ALBUM_ID_AVATAR = 在Imgur設定的avatar相簿ID
+- UNKNOWN_IMG = 訪客頭像URL
+- PIGEON_IMG = 用戶預設頭像URL
 
 ## API
 <table>
